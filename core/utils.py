@@ -1,4 +1,7 @@
+from datetime import datetime, timezone
 from urllib.parse import urlparse, urlunparse
+
+from loguru import logger
 
 
 def sanitize_url(url):
@@ -24,3 +27,15 @@ def sanitize_url(url):
     ))
 
     return sanitized_url
+
+
+def convert_timestamp_to_utc_dt(timestamp) -> [str, None]:
+    try:
+        # Convert timestamp to datetime object
+        dt_object = datetime.fromtimestamp(timestamp / 1000.0, tz=timezone.utc)
+
+        # Format datetime object as a string
+        formatted_string = dt_object.strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+        return formatted_string
+    except Exception as e:
+        logger.exception(e)

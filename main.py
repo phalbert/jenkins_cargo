@@ -6,7 +6,7 @@ from port_ocean.core.ocean_types import ASYNC_GENERATOR_RESYNC_TYPE
 
 from core.client import JenkinsClient
 from core.types import JenkinsEvent, ObjectKind
-from core.url import sanitize_url
+from core.utils import sanitize_url
 
 
 # Required
@@ -42,20 +42,20 @@ async def on_resync_builds(kind: str) -> ASYNC_GENERATOR_RESYNC_TYPE:
             yield builds
 
 
-@ocean.router.post("/events")
-async def handle_events(event: JenkinsEvent) -> dict[str, bool]:
-    with logger.contextualize(event_id=event.id, event_state=event.type):
-        logger.info(f"{event.kind}: Received {event.dataType} event {event.id} | {event.type}")
-
-        if event.type in ["run.initialize", "run.started"]:
-            return {"ok": True}
-
-        event_record = event.dict(by_alias=True)
-        logger.info(event_record)
-
-        print(event_record)
-        await ocean.register_raw(event.kind, [event_record])
-        return {"ok": True}
+# @ocean.router.post("/events")
+# async def handle_events(event: JenkinsEvent) -> dict[str, bool]:
+#     with logger.contextualize(event_id=event.id, event_state=event.type):
+#         logger.info(f"{event.kind}: Received {event.dataType} event {event.id} | {event.type}")
+#
+#         if event.type in ["run.initialize", "run.started"]:
+#             return {"ok": True}
+#
+#         event_record = event.dict(by_alias=True)
+#         logger.info(event_record)
+#
+#         print(event_record)
+#         await ocean.register_raw(event.kind, [event_record])
+#         return {"ok": True}
 
 
 # Optional

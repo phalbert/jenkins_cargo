@@ -5,6 +5,8 @@ from typing import Any, AsyncGenerator
 
 from loguru import logger
 
+from core.utils import convert_timestamp_to_utc_dt
+
 
 class JenkinsClient:
     def __init__(
@@ -56,8 +58,8 @@ class JenkinsClient:
             if len(jobs) < per_page:
                 break
 
-    async def get_builds(self, job_slug: str) -> list[dict[str, Any]]:
-        logger.info(f"Getting builds from Jenkins for job {job_slug}")
+    async def get_builds(self, job_name: str) -> list[dict[str, Any]]:
+        logger.info(f"Getting builds from Jenkins for job {job_name}")
 
         params = {
             'tree': f'builds[id,number,url,result,duration,timestamp,displayName,fullDisplayName]'
@@ -65,21 +67,22 @@ class JenkinsClient:
         encoded_params = urlencode(params)
 
         build_response = await self.client.get(
-            f"{self.jenkins_base_url}/job/{job_slug}/api/json?{encoded_params}"
+            f"{self.jenkins_base_url}/job/{job_name}/api/json?{encoded_params}"
         )
         build_response.raise_for_status()
-        builds = build_response.json()
-        logger.info(f"Got {len(builds)} builds from Jenkins for job {job_slug}")
+        builds = build_response.json().get("builds", [])
+        logger.info(f"Got {len(builds)} builds from Jenkins for job {job_name}")
 
         transformed_builds = [
             {
-                "type": "build.finalize",
-                "source": job_slug,
+                "type": "run.finalize",
+                "source": f"job/{job_name}/",
                 "url": build.get("url", None),
-                "data": build
+                "data": {
+                    **build,
+                    "timestamp": convert_timestamp_to_utc_dt(build.get("timestamp"))
+                }
             }
-            for build in builds if isinstance(build, dict)
+            for build in builds
         ]
-        print(f"Builds: {transformed_builds}")
-
         return transformed_builds

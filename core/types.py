@@ -6,7 +6,7 @@ from loguru import logger
 from port_ocean.context.ocean import ocean
 from pydantic import BaseModel
 
-from core.url import sanitize_url
+from core.utils import sanitize_url
 
 
 class ObjectKind(StrEnum):
