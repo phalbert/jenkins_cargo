@@ -3,7 +3,10 @@ from typing import List, Optional, Union
 from datetime import datetime, timezone
 
 from loguru import logger
+from port_ocean.context.ocean import ocean
 from pydantic import BaseModel
+
+from core.url import sanitize_url
 
 
 class ObjectKind(StrEnum):
@@ -98,7 +101,15 @@ class JenkinsEvent(BaseModel):
     time: str
     type: str
     url: str
+    fullUrl: Optional[str]
 
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.fullUrl = self.construct_full_url()
+
+    def construct_full_url(self):
+        # Replace this with your logic to construct the full URL based on available information
+        return sanitize_url(f"{ocean.integration_config['jenkins_host']}/{self.url}")
 
     @property
     def kind(self):
@@ -108,5 +119,3 @@ class JenkinsEvent(BaseModel):
             return ObjectKind.BUILD
         else:
             return None  # or any other default value
-
-

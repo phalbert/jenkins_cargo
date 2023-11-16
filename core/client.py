@@ -1,4 +1,4 @@
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 
 import httpx
 from typing import Any, AsyncGenerator
@@ -8,7 +8,7 @@ from loguru import logger
 
 class JenkinsClient:
     def __init__(
-        self, jenkins_base_url: str, jenkins_user: str, jenkins_password: str
+            self, jenkins_base_url: str, jenkins_user: str, jenkins_password: str
     ) -> None:
         self.jenkins_base_url = jenkins_base_url
         self.jenkins_user = jenkins_user
@@ -43,8 +43,9 @@ class JenkinsClient:
                 {
                     "type": "item.updated",
                     "data": job,
-                    "url": job.get("url"),
-                    # "time": job.get("time")
+                    "url": urlparse(job.get("url")).path.lstrip('/'),  # since blueprint expects path rather host
+                    "fullUrl": job.get("url"),
+                    "time": job.get("timestamp")
                 }
                 for job in jobs
             ]

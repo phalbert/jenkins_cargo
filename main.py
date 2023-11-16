@@ -6,6 +6,7 @@ from port_ocean.core.ocean_types import ASYNC_GENERATOR_RESYNC_TYPE
 
 from core.client import JenkinsClient
 from core.types import JenkinsEvent, ObjectKind
+from core.url import sanitize_url
 
 
 # Required
@@ -22,7 +23,6 @@ async def on_resync_jobs(kind: str) -> ASYNC_GENERATOR_RESYNC_TYPE:
 
     async for jobs in jenkins_client.get_jobs():
         logger.info(f"Received ${len(jobs)} jobs")
-        logger.info(jobs)
         yield jobs
 
 
@@ -53,6 +53,7 @@ async def handle_events(event: JenkinsEvent) -> dict[str, bool]:
         event_record = event.dict(by_alias=True)
         logger.info(event_record)
 
+        print(event_record)
         await ocean.register_raw(event.kind, [event_record])
         return {"ok": True}
 

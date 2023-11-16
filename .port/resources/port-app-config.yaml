@@ -14,7 +14,8 @@ resources:
             jobName: .data.fullName
             url: .url
             jobStatus: .type | split(\".\") | last
-            timestamp: '.time // .timestamp'
+            timestamp: .time
+#            jobFullUrl: .fullUrl
   - kind: build
     selector:
       query: .type | startswith("run")

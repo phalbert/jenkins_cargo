@@ -28,7 +28,11 @@
                 },
                 "url": {
                     "type": "string",
-                    "title": "Project URL",
+                    "title": "Project URL"
+                },
+                "jobFullUrl": {
+                    "type": "string",
+                    "title": "Job Full URL",
                     "format": "url"
                 }
             },
