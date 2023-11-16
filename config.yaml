@@ -13,4 +13,6 @@ integration:
   # The type of the integration.
   type: "jenkins"
   config:
-    appHost: "{{ from env APP_HOST }}"
+    jenkinsHost: "{{ from env JENKINS_HOST }}"
+    jenkinsUser: "{{ from env JENKINS_USER }}"
+    jenkinsPassword: "{{ from env JENKINS_PASSWORD }}"
